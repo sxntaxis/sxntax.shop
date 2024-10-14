@@ -3,16 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gashapon Mechanism</title>
+    <title>sxntax.shop</title>
     <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-    <div class="container">
-        <h1>Welcome to the Gashapon</h1>
-        <button id="gacha-button" onclick="handleGacha()">Try your luck!</button>
-        <p id="message">Click the button to see your message</p>
-        <p id="tries-left">Tries left: 5</p>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script><body>
+    <header>
+        <h1 id="site-title">sxntax.shop</h1>
+        <nav>
+            <ul>
+                <li><a href="#" class="tab-link active" data-tab="3d-printing">3D Printing</a></li>
+                <li><a href="#" class="tab-link" data-tab="moonshots">Creative Moonshots</a></li>
+                <li><a href="#" class="tab-link" data-tab="personal">Personal Hub</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section id="3d-printing" class="section tab-content active">
+            <div id="product-shelf" class="shelf">
+                <!-- Products will be dynamically inserted here by JavaScript -->
+            </div>
+        </section>
+
+        <section id="moonshots" class="section tab-content">
+            <h2>Creative Moonshots</h2>
+            <p>Explore our innovative projects and ideas that push the boundaries of creativity and technology.</p>
+        </section>
+
+        <section id="personal" class="section tab-content">
+            <h2>Personal Hub</h2>
+            <p>Welcome to my personal space where I share my thoughts, experiences, and ongoing projects.</p>
+        </section>
+    </main>
+
+    <div id="modelModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModel()">&times;</span>
+            <div id="3d-viewer"></div>
+            <div id="loading-message" style="display: none;">Loading 3D model...</div>
+            <div id="error-message" style="display: none; color: red;"></div>
+            <h2 id="modal-product-name"></h2>
+            <p id="modal-product-price"></p>
+            <div id="product-options">
+                <label for="layer-height">Layer Height:</label>
+                <select id="layer-height">
+                    <option value="0.1">0.1mm</option>
+                    <option value="0.2">0.2mm</option>
+                    <option value="0.3">0.3mm</option>
+                </select>
+                <label for="fill">Fill:</label>
+                <select id="fill">
+                    <option value="20">20%</option>
+                    <option value="50">50%</option>
+                    <option value="100">100%</option>
+                </select>
+                <label for="color">Color:</label>
+                <select id="color">
+                    <option value="red">Red</option>
+                    <option value="blue">Blue</option>
+                    <option value="green">Green</option>
+                </select>
+            </div>
+            <button id="add-to-cart">Add to Cart</button>
+        </div>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
