@@ -15,7 +15,7 @@ const products = [
     { 
         name: "Lara", 
         price: "$199.99", 
-        image: "images/lara.jpg", 
+        image: "images/Lara.jpg", 
         model: "models/lara.glb" 
     },    
     { 
