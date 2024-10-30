@@ -5,33 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>sxntax.shop</title>
     <link rel="stylesheet" href="styles.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script><body>
+</head>
+<body>
     <header>
         <h1 id="site-title">sxntax.shop</h1>
         <nav>
             <ul>
-                <li><a href="#" class="tab-link active" data-tab="3d-printing">3D Printing</a></li>
-                <li><a href="#" class="tab-link" data-tab="moonshots">Creative Moonshots</a></li>
-                <li><a href="#" class="tab-link" data-tab="personal">Personal Hub</a></li>
+                <li><a href="#" class="tab-link active" tab="3d-printing">3D Printing</a></li>
+                <li><a href="#" class="tab-link" tab="moonshots">Creative Moonshots</a></li>
+                <li><a href="#" class="tab-link" tab="personal">Personal Hub</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
-        <section id="3d-printing" class="section tab-content active">
+        <section id="3d-printing" class="tab-content active">
             <div id="product-shelf" class="shelf">
-                <!-- Products will be dynamically inserted here by JavaScript -->
+                <!-- Products will be dynamically inserted here -->
             </div>
         </section>
 
-        <section id="moonshots" class="section tab-content">
+        <section id="moonshots" class="tab-content">
             <h2>Creative Moonshots</h2>
             <p>Explore our innovative projects and ideas that push the boundaries of creativity and technology.</p>
         </section>
 
-        <section id="personal" class="section tab-content">
+        <section id="personal" class="tab-content">
             <h2>Personal Hub</h2>
             <p>Welcome to my personal space where I share my thoughts, experiences, and ongoing projects.</p>
         </section>
@@ -44,31 +43,30 @@
             <div id="loading-message" style="display: none;">Loading 3D model...</div>
             <div id="error-message" style="display: none; color: red;"></div>
             <h2 id="modal-product-name"></h2>
-            <p id="modal-product-price"></p>
             <div id="product-options">
-                <label for="layer-height">Layer Height:</label>
                 <select id="layer-height">
-                    <option value="0.1">0.1mm</option>
-                    <option value="0.2">0.2mm</option>
-                    <option value="0.3">0.3mm</option>
+                    <option value="0.1">Layer Height: 0.1mm</option>
+                    <option value="0.2">Layer Height: 0.2mm</option>
+                    <option value="0.3">Layer Height: 0.3mm</option>
                 </select>
-                <label for="fill">Fill:</label>
                 <select id="fill">
-                    <option value="20">20%</option>
-                    <option value="50">50%</option>
-                    <option value="100">100%</option>
+                    <option value="20">Fill: 20%</option>
+                    <option value="50">Fill: 50%</option>
+                    <option value="100">Fill: 100%</option>
                 </select>
-                <label for="color">Color:</label>
                 <select id="color">
-                    <option value="red">Red</option>
-                    <option value="blue">Blue</option>
-                    <option value="green">Green</option>
+                    <option value="red">Color: Red</option>
+                    <option value="blue">Color: Blue</option>
+                    <option value="green">Color: Green</option>
                 </select>
             </div>
             <button id="add-to-cart">Add to Cart</button>
         </div>
     </div>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/controls/OrbitControls.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/loaders/GLTFLoader.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
