@@ -1,8 +1,7 @@
-// Array to hold product information
 const products = [
     { 
         name: "Bulldog", 
-        price: "???", 
+        price: "29.99", 
         image: "images/Bulldog.png", 
         model: "models/Bulldog.stl" 
     },
@@ -171,8 +170,7 @@ function renderProducts() {
     products.forEach((product, index) => {
         const productCard = document.createElement('div');
         productCard.className = 'product-card';
-        productCard.onclick = function() { show3DModel(index); };
-
+        
         const imageWrapper = document.createElement('div');
         imageWrapper.className = 'product-image-wrapper';
 
@@ -182,6 +180,13 @@ function renderProducts() {
 
         const infoDiv = document.createElement('div');
         infoDiv.className = 'product-info';
+        
+        // Enhanced click handler for the tag
+        infoDiv.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            show3DModel(index);
+        });
 
         const name = document.createElement('h3');
         name.innerText = product.name;
@@ -199,67 +204,105 @@ function renderProducts() {
         shelf.appendChild(productCard);
     });
 }
-// Function to initialize three.js scene and load 3D models
+
 function show3DModel(productIndex) {
     const modal = document.getElementById('modelModal');
-    const viewer = document.getElementById('3d-viewer');
-    const loadingMessage = document.getElementById('loading-message');
-    const errorMessage = document.getElementById('error-message');
-    const modalProductName = document.getElementById('modal-product-name');
+    if (!modal) return; // Safety check
     
-    viewer.innerHTML = '';
+    const modalContent = modal.querySelector('.modal-content');
+    if (!modalContent) return; // Safety check
+    
+    // Clear and set up modal content
+    modalContent.innerHTML = `
+        <span class="close" onclick="closeModel()">&times;</span>
+        <div id="3d-viewer"></div>
+        <h2 id="modal-product-name">${products[productIndex].name}</h2>
+        <div id="product-options">
+            <select id="layer-height">
+                <option value="0.1">Layer Height: 0.1mm</option>
+                <option value="0.2">Layer Height: 0.2mm</option>
+                <option value="0.3">Layer Height: 0.3mm</option>
+            </select>
+            <select id="fill">
+                <option value="20">Fill: 20%</option>
+                <option value="50">Fill: 50%</option>
+                <option value="100">Fill: 100%</option>
+            </select>
+            <select id="color">
+                <option value="red">Color: Red</option>
+                <option value="blue">Color: Blue</option>
+                <option value="green">Color: Green</option>
+            </select>
+        </div>
+        <div class="photo-slideshow">
+            <!-- Slideshow placeholder -->
+        </div>
+        <button id="add-to-cart">Haga su pedido</button>
+        <div class="product-info-extended">
+            <h3>Product Details</h3>
+            <p>This is a high-quality 3D printed model of ${products[productIndex].name}.</p>
+            <p>Specifications:</p>
+            <ul>
+                <li>Material: PLA/ABS</li>
+                <li>Available in multiple colors</li>
+                <li>Customizable layer height</li>
+                <li>Multiple infill options</li>
+            </ul>
+            <p>Perfect for collectors, enthusiasts, and decorative purposes.</p>
+        </div>
+    `;
+
+    // Set up 3D viewer
+    const viewer = document.getElementById('3d-viewer');
+    const loadingMessage = document.createElement('div');
+    loadingMessage.id = 'loading-message';
     loadingMessage.style.display = 'block';
-    errorMessage.style.display = 'none';
-    errorMessage.textContent = '';
+    loadingMessage.textContent = 'Loading 3D model...';
+    viewer.appendChild(loadingMessage);
 
-    const progressBar = document.createElement('div');
-    progressBar.style.width = '0%';
-    progressBar.style.height = '5px';
-    progressBar.style.backgroundColor = '#4CAF50';
-    progressBar.style.transition = 'width 0.3s';
-    loadingMessage.appendChild(progressBar);
+    // Show modal
+    modal.style.display = 'flex';
+    modal.classList.add('show');
 
-    modalProductName.textContent = products[productIndex].name;
+    // Initialize THREE.js scene
     viewer.style.width = '100%';
     viewer.style.height = '400px';
+    
     const scene = new THREE.Scene();
     scene.background = new THREE.Color(0xf0f0f0);
+    
     const camera = new THREE.PerspectiveCamera(75, viewer.clientWidth / viewer.clientHeight, 0.1, 1000);
+    
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(viewer.clientWidth, viewer.clientHeight);
     viewer.appendChild(renderer.domElement);
 
+    // Add lights
     const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
     scene.add(ambientLight);
     const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
     directionalLight.position.set(1, 1, 1).normalize();
     scene.add(directionalLight);
 
+    // Set up controls
     const controls = new THREE.OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
     controls.dampingFactor = 0.25;
     controls.enableZoom = true;
 
+    // Load 3D model
     const loader = new THREE.GLTFLoader();
     const modelPath = products[productIndex].model;
-
-    const loadingTimeout = setTimeout(() => {
-        loadingMessage.textContent = 'Loading is taking longer than expected. Please wait...';
-    }, 10000);
 
     loader.load(
         modelPath,
         function(gltf) {
-            clearTimeout(loadingTimeout);
             loadingMessage.style.display = 'none';
             
             const model = gltf.scene;
-            if (!model) {
-                throw new Error('Loaded GLTF file does not contain a valid scene');
-            }
-
             scene.add(model);
 
+            // Center and scale model
             const box = new THREE.Box3().setFromObject(model);
             const center = box.getCenter(new THREE.Vector3());
             model.position.sub(center);
@@ -274,50 +317,47 @@ function show3DModel(productIndex) {
             controls.target.set(0, 0, 0);
             controls.update();
 
+            // Store references
             currentScene = scene;
             currentCamera = camera;
             currentRenderer = renderer;
             currentModel = model;
             currentControls = controls;
 
+            // Animation loop
             function animate() {
                 requestAnimationFrame(animate);
                 controls.update();
                 renderer.render(scene, camera);
             }
             animate();
-
-            window.addEventListener('resize', onWindowResize, false);
         },
         function(xhr) {
-            const percentComplete = xhr.loaded / xhr.total * 100;
-            progressBar.style.width = percentComplete + '%';
-            loadingMessage.textContent = `Loading: ${Math.round(percentComplete)}%`;
+            loadingMessage.textContent = `Loading: ${Math.round((xhr.loaded / xhr.total) * 100)}%`;
         },
         function(error) {
-            clearTimeout(loadingTimeout);
             loadingMessage.style.display = 'none';
-            errorMessage.style.display = 'block';
-            errorMessage.textContent = `Error loading 3D model: ${error.message}\nFile: ${modelPath}`;
+            const errorMessage = document.getElementById('error-message');
+            if (errorMessage) {
+                errorMessage.style.display = 'block';
+                errorMessage.textContent = `Error loading 3D model: ${error.message}`;
+            }
             console.error(error);
         }
     );
 
-    modal.style.display = 'flex';
-}
-function onWindowResize() {
-    if (currentCamera && currentRenderer) {
-        const viewer = document.getElementById('3d-viewer');
-        currentCamera.aspect = viewer.clientWidth / viewer.clientHeight;
-        currentCamera.updateProjectionMatrix();
-        currentRenderer.setSize(viewer.clientWidth, viewer.clientHeight);
-    }
+    // Set up buying options
+    setupBuyingOptions();
 }
 
 function closeModel() {
     const modal = document.getElementById('modelModal');
-    modal.style.display = 'none';
+    if (!modal) return;
     
+    modal.style.display = 'none';
+    modal.classList.remove('show');
+    
+    // Clean up THREE.js resources
     if (currentRenderer) {
         currentRenderer.dispose();
         currentRenderer = null;
@@ -360,41 +400,46 @@ function setupTabNavigation() {
 }
 
 function setupBuyingOptions() {
-    const layerHeight = document.getElementById('layer-height');
-    const fill = document.getElementById('fill');
-    const color = document.getElementById('color');
+    const options = document.querySelectorAll('#product-options select');
     const addToCartButton = document.getElementById('add-to-cart');
 
-    layerHeight.addEventListener('change', updateModel);
-    fill.addEventListener('change', updateModel);
-    color.addEventListener('change', updateModel);
-
-    addToCartButton.addEventListener('click', () => {
-        const options = {
-            layerHeight: layerHeight.value,
-            fill: fill.value,
-            color: color.value
-        };
-        console.log('Adding to cart with options:', options);
+    options.forEach(option => {
+        option.addEventListener('change', updateModel);
     });
+
+    if (addToCartButton) {
+        addToCartButton.addEventListener('click', () => {
+            const selectedOptions = {};
+            options.forEach(option => {
+                selectedOptions[option.id] = option.value;
+            });
+            console.log('Adding to cart with options:', selectedOptions);
+        });
+    }
 }
 
 function updateModel() {
     if (currentModel) {
-        const layerHeight = document.getElementById('layer-height').value;
-        const fill = document.getElementById('fill').value;
-        const color = document.getElementById('color').value;
+        const layerHeight = document.getElementById('layer-height')?.value;
+        const fill = document.getElementById('fill')?.value;
+        const color = document.getElementById('color')?.value;
 
-        currentModel.scale.y = parseFloat(layerHeight) * 10;
+        if (layerHeight) {
+            currentModel.scale.y = parseFloat(layerHeight) * 10;
+        }
 
-        const fillOpacity = parseInt(fill) / 100;
-        currentModel.traverse((child) => {
-            if (child.isMesh) {
-                child.material.opacity = fillOpacity;
-                child.material.transparent = true;
-                child.material.color.setStyle(color);
-            }
-        });
+        if (fill) {
+            const fillOpacity = parseInt(fill) / 100;
+            currentModel.traverse((child) => {
+                if (child.isMesh) {
+                    child.material.opacity = fillOpacity;
+                    child.material.transparent = true;
+                    if (color) {
+                        child.material.color.setStyle(color);
+                    }
+                }
+            });
+        }
 
         if (currentRenderer && currentScene && currentCamera) {
             currentRenderer.render(currentScene, currentCamera);
@@ -412,12 +457,19 @@ function webglAvailable() {
     }
 }
 
+// Add click outside modal to close
+window.addEventListener('click', function(event) {
+    const modal = document.getElementById('modelModal');
+    if (event.target === modal) {
+        closeModel();
+    }
+});
+
 // Initialize everything when the DOM is fully loaded
 document.addEventListener('DOMContentLoaded', function() {
     renderProducts();
     setupTabNavigation();
-    setupBuyingOptions();
-
+    
     if (!webglAvailable()) {
         const errorMessage = document.getElementById('error-message');
         if (errorMessage) {
