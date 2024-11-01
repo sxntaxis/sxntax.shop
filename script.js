@@ -22,11 +22,19 @@ const products = [
         model: "models/TuringVase.stl" 
     },
     { 
+<<<<<<< HEAD
         name: "Totoro (Ghibli)", 
         price: "???", 
         image: "images/Totoro (Ghibli).png", 
         model: "models/Totoro (Ghibli).stl" 
     },
+=======
+        name: "Lara", 
+        price: "$199.99", 
+        image: "images/Lara.jpg", 
+        model: "models/lara.glb" 
+    },    
+>>>>>>> e41200901db685a48db67723e3a8946a3dff85e9
     { 
         name: "Murakami Flower", 
         price: "???", 
